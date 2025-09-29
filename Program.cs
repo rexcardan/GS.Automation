@@ -11,13 +11,18 @@ class Entry
     {
         var appSettingsService = new AppSettingsService();
         var daService = new DAClientSyncService(appSettingsService);
+        var esapiEngineService = new EsapiEngineService();
+        // Start ESAPI engine early (non-blocking) so it's ready when needed
+        var esapiStatus = "Starting";
+        esapiEngineService.ContextReady += (_, __) => { esapiStatus = "Ready"; AnsiConsole.MarkupLine("[green]ESAPI engine ready[/]"); };
+        try { System.Threading.Tasks.Task.Run(() => esapiEngineService.StartAsync()); } catch { }
         string patientIdArg = ParseArg(args, "-id") ?? ParseArg(args, "--id");
 
         while (true)
         {
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("Select an action")
+                    .Title($"Select an action [grey](ESAPI: {esapiStatus})[/]")
                     .AddChoices(new[] {
                         "1) Settings & API test",
                         "2) Selection & Export",
@@ -30,7 +35,7 @@ class Entry
             }
             else if (choice.StartsWith("2"))
             {
-                SelectionAndExportScreen(appSettingsService, daService, patientIdArg);
+                SelectionAndExportScreen(appSettingsService, daService, esapiEngineService, patientIdArg);
             }
             else
             {
@@ -121,7 +126,7 @@ class Entry
         }
     }
 
-    static void SelectionAndExportScreen(IAppSettingsService settings, DAClientSyncService da, string patientIdArg)
+    static void SelectionAndExportScreen(IAppSettingsService settings, DAClientSyncService da, IEsapiEngineService esapiEngine, string patientIdArg)
     {
         // Require a patient id first if not provided
         var patientId = patientIdArg;
@@ -141,7 +146,7 @@ class Entry
         DicomTree tree = null;
         try
         {
-            ITreeBuilder builder = useMock ? (ITreeBuilder)new MockTreeBuilder() : new EsapiTreeBuilder();
+            ITreeBuilder builder = useMock ? (ITreeBuilder)new MockTreeBuilder() : new EngineTreeBuilder(esapiEngine);
             tree = builder.BuildTree(patientId);
         }
         catch (Exception ex)
