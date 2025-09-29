@@ -24,6 +24,7 @@ namespace DICOMAnon.Exporter.Helpers
             if (_started) return;
             _engine = new EsapiEngine(_logger);
             _engine.ContextLoaded += (_, __) => ContextReady?.Invoke(this, EventArgs.Empty);
+            await _engine.SetContext(() => Application.CreateApplication());
             _started = true;
             // Preload ESAPI application context so it's ready
             await EnsureContextAsync();
@@ -37,8 +38,9 @@ namespace DICOMAnon.Exporter.Helpers
         public async Task EnsureContextAsync()
         {
             if (!_started)
+            {
                 await StartAsync();
-            await _engine.SetContext(() => Application.CreateApplication());
+            }
         }
 
         public T WithApp<T>(Func<Application, T> func)
