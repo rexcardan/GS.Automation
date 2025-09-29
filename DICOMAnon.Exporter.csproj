@@ -6,19 +6,21 @@
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="DICOMAnon.API" Version="4.0.8268.643" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.9" />
 		<PackageReference Include="Spectre.Console" Version="0.51.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Reference Include="VMS.TPS.Common.Model.API">
-			<HintPath>..\..\..\..\..\Program Files (x86)\Varian\RTM\18.1\esapi\API\VMS.TPS.Common.Model.API.dll</HintPath>
+			<HintPath>C:\Program Files (x86)\Varian\RTM\18.1\esapi\API\VMS.TPS.Common.Model.API.dll</HintPath>
 		</Reference>
 		<Reference Include="VMS.TPS.Common.Model.Types">
-			<HintPath>..\..\..\..\..\Program Files (x86)\Varian\RTM\18.1\esapi\API\VMS.TPS.Common.Model.Types.dll</HintPath>
+			<HintPath>C:\Program Files (x86)\Varian\RTM\18.1\esapi\API\VMS.TPS.Common.Model.Types.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
